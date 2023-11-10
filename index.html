@@ -1,0 +1,92 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <p>
+        <H4>Coloca uma cidade aí krai de bicho burro</H4>
+    </p>
+    <style>
+        input {
+            padding: 5px;
+            outline: none;
+        }
+ 
+        button {
+            padding: 5px;
+            outline: none;
+            cursor: pointer;
+        }
+ 
+        img {
+            min-width: 120px;
+            margin-left: 10px;
+            /* background-image: radial-gradient(#b5b5b5,#f7f7f7 70%); */
+        }
+ 
+        .conteudo{
+            margin-top: 10px;
+            word-break: break-all;
+        }
+    </style>
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+    <script>
+        $(document).ready( function(){
+            var input = document.querySelector('input');
+            var button = document.querySelector('button');
+            var img = document.querySelector('img');
+            var cidade = document.querySelector('#cidade');
+            var grau = document.querySelector('#grau');
+            var conteudo = document.querySelector('.conteudo');
+ 
+        $('button').click( function(){
+ 
+            if(!input.value){
+                return;
+            }
+            getWeatherData();
+        });
+ 
+        async function getWeatherData(){
+            var urlApi = `http://api.openweathermap.org/data/2.5/forecast?q=${encodeURI(input.value)}&units=metric&id=524901&appid=4a18329a5b9b39c958186264361f3817`;
+            
+            try{
+                await fetch(urlApi)
+                .then((res)=>res.json())
+                .then((data)=>{
+                  //  console.log(data);
+                    if(data?.cod && data.cod === "404"){
+                        return alert("Cidade não encontrada");
+                    }
+                    loadWeatherInfo(data);
+                })
+            } catch(error){
+                alert(error);
+            }
+        }
+ 
+        function loadWeatherInfo(data){
+           // console.log(data);
+ 
+          cidade.innerHTML = `${data.city.name}, ${data.city.country}`;
+           grau.innerHTML = `Temperatura: ${Math.floor(data.list[data.list.length-1].main.temp)}º C`;
+           img.src = `http://openweathermap.org/img/wn/${data.list[data.list.length-1].weather[0].icon}@2x.png`;
+            conteudo.style.display = 'flex';
+        }
+        });
+       
+    </script>
+</head>
+<body style="border-color: rgb(20, 223, 162);">
+    <input type="text">
+    <button type="submit">Pesquisar</button>
+    <div class="conteudo" style="display: none;">
+        <h2 id="cidade"></h2>
+        <span id="grau"></span>
+        <img src="" alt="clima">
+    </div>
+</body>
+</html>
